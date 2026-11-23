@@ -1,6 +1,6 @@
 # Specification — USA → Europe memory-card converter
 
-Status: v0.1 experimental; structural gate passed on synthetic fixtures and a private real USA card. First EU load reached the playable field (user-observed); complete runtime compatibility is **not verified**. No story spoilers.
+Status: v0.1 experimental; structural gate passed on synthetic fixtures and a private real USA card. First EU load reached the playable field and the user confirmed preserved visible game data; complete runtime compatibility is **not verified**. No story spoilers.
 
 ## Goal
 
@@ -31,7 +31,7 @@ Transfer a native PS1 memory-card save from Digimon World 3 USA (SLUS-01436, for
 
 1. Structural conversion and synthetic tests (v0.1) — **PASS**.
 2. Compare independently produced USA/EUR cards at matching campaign states; audit regional script and flag semantics. Public evidence must be spoiler-free.
-3. Validate loading, movement, battles, menus, re-saving and reloading in a clean EU game environment using disposable copies. Initial load passed provisionally on one real slot; movement, battle, menus, resave/reload and event transitions remain pending, as do additional checkpoints and slots.
+3. Validate loading, movement, battles, menus, re-saving and reloading in a clean EU game environment using disposable copies. Initial load and visible data inspection passed provisionally on one real slot; movement, battle, resave/reload and event transitions remain pending, as do additional checkpoints and slots.
 4. Only after gates 2 and 3 pass can conversion stop requiring the experimental opt-in. UI work should follow reliable core conversion.
 
 See `FORMAT.md` for binary layout, `RESEARCH.md` for evidence, and `VALIDATION.md` for test protocol.

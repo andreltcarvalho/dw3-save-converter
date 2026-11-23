@@ -28,6 +28,7 @@ Structural verification is not runtime verification. Do not label the tool stabl
 | Read-only verifier: every shared flag group, extension, unrelated block and summary | PASS |
 | Original live card and private snapshot SHA-256 before/after | PASS — identical, no edits |
 | Initial EU runtime load of one converted slot | PASS (user-observed playable field; provisional) |
+| Visible game data inspection | PASS (user-observed; spot check) |
 | Matched-state flag audit / gameplay progression and resave | PENDING |
 
 No private memory cards, personal information or hashes are included in this repository.
@@ -44,3 +45,8 @@ No private memory cards, personal information or hashes are included in this rep
 - The isolated Recomp completed compilation when run by the user. The user reports successfully loading the converted slot; a screenshot shows the playable field. The generated module exists and the lab's card remains identical to the prepared converted card, so no in-game resave is yet evidenced.
 - ReShade's first-run overlay and screenshot notification were visible. The copied `dxgi.dll` identifies itself as ReShade 6.8; its private log confirms swap-chain hooks and screenshot capture. After the lab exited, the copied DLL was renamed to `dxgi.reshade-disabled.dll` (reversible); the installed game's DLL was untouched. A lower-edge rendering artifact was also visible; cause not yet established. Do not attribute it to save conversion or to ReShade without a clean retest.
 - Next: reopen the isolated game without ReShade, check status/inventory, traverse rooms, fight a battle, save in a different slot and restart/reload. Then verify the resulting EU card structurally. No original file or screenshot is published.
+
+## Second runtime check (2026-11-23)
+
+- User reports that the visible game data was present and normal after loading without ReShade. No in-game resave was performed; independent read-only verification still succeeds on the lab card. Full progression compatibility remains unverified.
+- Lower-edge corruption persisted without ReShade and despite graphics settings changes. A separate runtime hypothesis is supported by the shared Recomp GPU code: `write_gp1` sets noninterlaced PAL display height to 256, while the original game's [graphics header](https://github.com/ReGame-Labs/dw3_decomp/blob/791932b757b358bb8228f851ce96f4d22ae112dd/include/engine/gfx.h) defines the drawing surface as 320 x 240. `snapshot_display` reads that full nominal height directly from VRAM. The extra 16 rows can expose offscreen texture data, consistent with the artifact; not yet verified by a corrected build. This does not establish a save-conversion defect. Keep any rendering fix separate from the converter and validate against fresh EUR and existing converted saves.
