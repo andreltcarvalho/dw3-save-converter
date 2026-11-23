@@ -3,6 +3,7 @@
 ## Automated
 
 - `npm test`: synthetic 128 KiB cards, one/multiple occupied slots, fragmented chain, zero extension, checksum/version changes, unrelated-block invariants, rejection of malformed and lossy inputs, and output-file exclusivity.
+- `node src/cli.mjs verify SOURCE OUTPUT`: read-only comparison of all preserved data, event arrays and zero-filled extensions, and the untouched parts of the card, against the independently parsed source.
 - Real private card inspection/conversion: snapshot the original with a new file name, compare SHA-256 before/after, parse the snapshot, convert to a separate output, independently inspect it. Never publish card bytes or player-specific hashes.
 
 ## Runtime acceptance (pending)
@@ -19,11 +20,12 @@ Structural verification is not runtime verification. Do not label the tool stabl
 
 | Check | Result |
 | --- | --- |
-| Node synthetic tests | PASS — all 5 test cases |
+| Node synthetic tests | PASS — all 6 test cases |
 | Independent public USA/EUR sample layout and checksums | PASS |
 | Private real source: region, index and occupied-slot checksums | PASS |
 | Experimental output: region 4, card size, checksums, preserved occupied slots | PASS |
 | Independent byte comparison of common state 0x0004–0x2643 | PASS — no differences |
+| Read-only verifier: every shared flag group, extension, unrelated block and summary | PASS |
 | Original live card and private snapshot SHA-256 before/after | PASS — identical, no edits |
 | Matched-state flag audit / EU runtime loading and progression | PENDING |
 

@@ -112,6 +112,48 @@ export function inspectCard(card) {
     directoryName: entry.name, occupiedSlots: slots.map(s => s.occupied), structurallyValid: true };
 }
 
+/** Compare an existing conversion without generating or mutating either card. */
+export function verifyConversion(source, target) {
+  const original = readGame(source), converted = readGame(target);
+  requireThat(original.format === US && converted.format === EU, 'Expected a USA source and EUR target');
+  requireThat(original.entry.chain.join(',') === converted.entry.chain.join(','), 'Allocation chain changed');
+  const { chain, offset } = original.entry;
+  requireThat(original.infoOffset === converted.infoOffset, 'Icon count changed');
+  const info = original.infoOffset;
+  const same = (a, b, label) => requireThat(a.equals(b), `Preservation check failed: ${label}`);
+  same(source.subarray(0, offset + 10), target.subarray(0, offset + 10), 'directory prefix');
+  same(source.subarray(offset + 30, offset + 127), target.subarray(offset + 30, offset + 127), 'directory entry metadata');
+  same(source.subarray(offset + 128, BLOCK_SIZE), target.subarray(offset + 128, BLOCK_SIZE), 'directory suffix');
+  for (let block = 1; block <= 15; block++) if (!chain.includes(block)) {
+    same(source.subarray(block * BLOCK_SIZE, (block + 1) * BLOCK_SIZE), target.subarray(block * BLOCK_SIZE, (block + 1) * BLOCK_SIZE), 'unrelated block');
+  }
+  // The checksum and format-version bytes are the only permissible index changes.
+  same(original.file.subarray(0, info), converted.file.subarray(0, info), 'header/icons');
+  requireThat(original.file[info + 1] === converted.file[info + 1], 'Most recent slot changed');
+  same(original.file.subarray(info + 3, info + INFO_RESERVED), converted.file.subarray(info + 3, info + INFO_RESERVED), 'slot summaries');
+  for (const [i, a] of original.slots.entries()) {
+    const b = converted.slots[i];
+    requireThat(a.occupied === b.occupied, `Slot ${i + 1}: occupancy changed`);
+    const end = a.offset + SLOT_STRIDE;
+    if (!a.occupied) {
+      same(original.file.subarray(a.offset, end), converted.file.subarray(b.offset, end), `empty slot ${i + 1}`);
+      continue;
+    }
+    requireThat(a.bytes[1] === b.bytes[1] && a.bytes[3] === b.bytes[3], `Slot ${i + 1}: header padding changed`);
+    same(a.bytes.subarray(4, COMMON_END), b.bytes.subarray(4, COMMON_END), `slot ${i + 1} common state`);
+    for (const [group, from, n, to, m] of FLAG_GROUPS) {
+      const shared = Math.min(n, m);
+      same(a.bytes.subarray(from, from + shared), b.bytes.subarray(to, to + shared), `slot ${i + 1} event group ${group.toString(16)}`);
+      requireThat(!a.bytes.subarray(from + shared, from + n).some(Boolean), 'Unmapped source flags are nonzero');
+      requireThat(!b.bytes.subarray(to + shared, to + m).some(Boolean), 'New target flags are nonzero');
+    }
+    same(original.file.subarray(a.offset + EU.size, end), converted.file.subarray(b.offset + EU.size, end), 'slot padding');
+  }
+  const tail = info + INFO_RESERVED + 3 * SLOT_STRIDE;
+  same(original.file.subarray(tail), converted.file.subarray(tail), 'file tail');
+  return { region: 'EUR', occupiedSlots: converted.slots.map(s => s.occupied), structurallyValid: true, preservedStateVerified: true, gameplayVerified: false };
+}
+
 export function convertCard(card, { experimental = false } = {}) {
   requireThat(experimental, 'Conversion is experimental; explicit opt-in is required');
   const { entry, file, infoOffset, format, slots } = readGame(card);
@@ -143,12 +185,7 @@ export function convertCard(card, { experimental = false } = {}) {
   frame.fill(0, 10, 30);
   frame.write(EU.name, 10, 20, 'ascii');
   frame[127] = xor(frame.subarray(0, 127));
-  const verified = readGame(output);
-  requireThat(verified.format === EU, 'Internal converted-card verification failed');
-  for (const [i, slot] of slots.entries()) {
-    requireThat(verified.slots[i].occupied === slot.occupied, 'Internal slot-preservation check failed');
-    if (slot.occupied) requireThat(slot.bytes.subarray(4, COMMON_END).equals(verified.slots[i].bytes.subarray(4, COMMON_END)), 'Internal common-data verification failed');
-  }
+  verifyConversion(card, output);
   return output;
 }
 

@@ -11,6 +11,7 @@ npm test
 node src/cli.mjs inspect original-copy.mcd
 node src/cli.mjs convert original-copy.mcd converted-eu.mcd --experimental
 node src/cli.mjs inspect converted-eu.mcd
+node src/cli.mjs verify original-copy.mcd converted-eu.mcd
 ```
 
 Only raw 128 KiB PS1 memory card images are supported. Use the standard European language selection on the target game. Test the output in a separate game environment before trusting it. No ROMs or real saves are included.

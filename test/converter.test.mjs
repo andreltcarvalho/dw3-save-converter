@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-import { CARD_SIZE, BLOCK_SIZE, FLAG_GROUPS, xor, inspectCard, convertCard, convertFile } from '../src/converter.mjs';
+import { CARD_SIZE, BLOCK_SIZE, FLAG_GROUPS, xor, inspectCard, convertCard, convertFile, verifyConversion } from '../src/converter.mjs';
 
 const US_NAME = 'BASLUS-01436DMW3-USA';
 const EU_NAME = 'BESLES-03936DMW3-EUR';
@@ -127,6 +127,19 @@ test('R05: refuse any nonzero unmapped flag bytes', () => {
   state[0x26ba] = 1; state[0] = xor(state.subarray(4));
   scatter(card, chain, file);
   assert.throws(() => convertCard(card, opt), /no mapped destination/);
+});
+
+test('R10: verify all three slots and detect valid-checksum data corruption', () => {
+  const source = fixture({ occupied: [0, 1, 2] });
+  const output = convertCard(source, opt);
+  assert.equal(verifyConversion(source, output).preservedStateVerified, true);
+  const chain = [1, 2, 3, 4];
+  const file = gather(output, chain);
+  const state = slot(file, 2, 0x26c4);
+  state[0x26aa] ^= 1; state[0] = xor(state.subarray(4));
+  scatter(output, chain, file);
+  assert.equal(inspectCard(output).structurallyValid, true);
+  assert.throws(() => verifyConversion(source, output), /event group 40/);
 });
 
 test('R07–R09: require opt-in and refuse existing output; CLI inspection has no write side effect', () => {
