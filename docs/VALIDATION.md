@@ -50,3 +50,8 @@ No private memory cards, personal information or hashes are included in this rep
 
 - User reports that the visible game data was present and normal after loading without ReShade. No in-game resave was performed; independent read-only verification still succeeds on the lab card. Full progression compatibility remains unverified.
 - Lower-edge corruption persisted without ReShade and despite graphics settings changes. A separate runtime hypothesis is supported by the shared Recomp GPU code: `write_gp1` sets noninterlaced PAL display height to 256, while the original game's [graphics header](https://github.com/ReGame-Labs/dw3_decomp/blob/791932b757b358bb8228f851ce96f4d22ae112dd/include/engine/gfx.h) defines the drawing surface as 320 x 240. `snapshot_display` reads that full nominal height directly from VRAM. The extra 16 rows can expose offscreen texture data, consistent with the artifact; not yet verified by a corrected build. This does not establish a save-conversion defect. Keep any rendering fix separate from the converter and validate against fresh EUR and existing converted saves.
+
+## Additional private checkpoint (2026-11-23)
+
+- Converted a newer USA snapshot to a new EUR file and independently verified all structural and preservation checks. The live USA card and previous EUR laboratory card retained their original SHA-256 hashes. A separate disposable copy is available for the next runtime test; no previous save was overwritten.
+- The lab launcher accepts `-CardName` to select an existing `.mcd` file by safe basename within its isolated profile. Default behavior remains unchanged. Absolute paths and path traversal are rejected by parameter validation; all existing isolation checks still apply.

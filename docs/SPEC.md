@@ -20,6 +20,7 @@ Transfer a native PS1 memory-card save from Digimon World 3 USA (SLUS-01436, for
 | R08 | Require explicit `--experimental` until semantic/gameplay validation is complete. Inspect must never write. | CLI behavior tests. |
 | R09 | Report occupied slot count, region and structural validation; do not display personal details or future events. | CLI output and review. |
 | R10 | Verify an existing converted card against its USA source without writing either, checking every mapped field and unaffected allocation. | Independent read-only comparison rejects valid-checksum but changed fields. |
+| R11 | Keep successive private runtime checkpoints independent. The lab launcher may select a safe local memory-card basename without replacing prior cards. | Reject absolute/traversal paths and preserve the default lab card. |
 
 ## Non-goals (v0.1)
 

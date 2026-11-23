@@ -1,4 +1,8 @@
-param([switch]$PrepareOnly)
+param(
+    [switch]$PrepareOnly,
+    [ValidatePattern('^[A-Za-z0-9][A-Za-z0-9_-]*\.mcd$')]
+    [string]$CardName = 'slot1.mcd'
+)
 
 $ErrorActionPreference = 'Stop'
 $project = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..')).Path
@@ -7,7 +11,7 @@ $exe = Join-Path $lab 'app\dw3recomp.exe'
 $profile = Join-Path $lab 'profile'
 $local = Join-Path $lab 'local'
 $temp = Join-Path $lab 'tmp'
-$card = Join-Path $profile 'DW3Recomp\memcards\slot1.mcd'
+$card = Join-Path (Join-Path $profile 'DW3Recomp\memcards') $CardName
 $disc = Join-Path $lab 'disc\Digimon World 2003 (Europe) (En,Fr,De,Es,It).cue'
 $bin = [IO.Path]::ChangeExtension($disc, '.bin')
 
