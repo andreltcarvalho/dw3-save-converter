@@ -30,3 +30,10 @@ Structural verification is not runtime verification. Do not label the tool stabl
 | Matched-state flag audit / EU runtime loading and progression | PENDING |
 
 No private memory cards, personal information or hashes are included in this repository.
+
+## EU runtime preparation (2026-11-23)
+
+- Verified the canonical European disc SHA-1 against the decompilation documentation. Copied the executable, toolchain, disc and converted card into an isolated lab with its own APPDATA, LOCALAPPDATA and temp paths.
+- The installed Recomp recognized the EUR disc and completed analysis and translation. Preparation failed before gameplay: Zig could not rename a temporary object in its cache while compiling `MAIN_resume.c`. A direct diagnostic compile reproduced the cache rename error in separate private caches. The isolated card remained byte-identical to the converted output. No original card was opened for writing.
+- The live USA card has progressed independently since the initial snapshot; the existing experimental result is for the earlier snapshot. Do not equate that snapshot with the live state.
+- `tools/run-eu-lab.ps1` provides a guarded Windows launcher for the already prepared private lab (not a distributable runtime). It verifies local copies and redirects profile/cache paths; `-PrepareOnly` checks compilation without launching gameplay. Run in a normal user PowerShell session if the sandbox compiler cannot perform its rename operation. Runtime acceptance remains pending.
