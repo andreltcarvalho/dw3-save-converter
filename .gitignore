@@ -1,0 +1,10 @@
+lab-private/
+*.mcd
+*.mcr
+*.mc
+*.srm
+*.sav
+*.bak
+*.state
+node_modules/
+coverage/

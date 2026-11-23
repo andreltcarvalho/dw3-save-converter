@@ -1,0 +1,8 @@
+{
+  "name": "dw3-save-converter",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": { "test": "node --test", "inspect": "node src/cli.mjs inspect", "convert": "node src/cli.mjs convert" }
+}
