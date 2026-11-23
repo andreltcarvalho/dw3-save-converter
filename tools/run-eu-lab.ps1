@@ -22,6 +22,7 @@ foreach ($path in @($profile, $local, $temp, (Join-Path $lab 'app'), (Join-Path 
 }
 if ((Get-Content -LiteralPath $disc -TotalCount 1) -ne 'FILE "Digimon World 2003 (Europe) (En,Fr,De,Es,It).bin" BINARY') { throw 'Unexpected CUE reference' }
 if ((Get-FileHash -Algorithm SHA1 -LiteralPath $bin).Hash -ne '457CB233349BA841E03B33D8060F8FBCADD45CB3') { throw 'Wrong European disc' }
+if (Test-Path -LiteralPath (Join-Path $lab 'app\dxgi.dll')) { throw 'Clean validation requires no local DXGI injector; disable it in the isolated lab before running.' }
 
 $envMap = @{ APPDATA = $profile; LOCALAPPDATA = $local; TEMP = $temp; TMP = $temp; ZIG_GLOBAL_CACHE_DIR = (Join-Path $local 'zig-global'); ZIG_LOCAL_CACHE_DIR = (Join-Path $local 'zig-local') }
 $previous = @{}

@@ -27,7 +27,8 @@ Structural verification is not runtime verification. Do not label the tool stabl
 | Independent byte comparison of common state 0x0004–0x2643 | PASS — no differences |
 | Read-only verifier: every shared flag group, extension, unrelated block and summary | PASS |
 | Original live card and private snapshot SHA-256 before/after | PASS — identical, no edits |
-| Matched-state flag audit / EU runtime loading and progression | PENDING |
+| Initial EU runtime load of one converted slot | PASS (user-observed playable field; provisional) |
+| Matched-state flag audit / gameplay progression and resave | PENDING |
 
 No private memory cards, personal information or hashes are included in this repository.
 
@@ -37,3 +38,9 @@ No private memory cards, personal information or hashes are included in this rep
 - The installed Recomp recognized the EUR disc and completed analysis and translation. Preparation failed before gameplay: Zig could not rename a temporary object in its cache while compiling `MAIN_resume.c`. A direct diagnostic compile reproduced the cache rename error in separate private caches. The isolated card remained byte-identical to the converted output. No original card was opened for writing.
 - The live USA card has progressed independently since the initial snapshot; the existing experimental result is for the earlier snapshot. Do not equate that snapshot with the live state.
 - `tools/run-eu-lab.ps1` provides a guarded Windows launcher for the already prepared private lab (not a distributable runtime). It verifies local copies and redirects profile/cache paths; `-PrepareOnly` checks compilation without launching gameplay. Run in a normal user PowerShell session if the sandbox compiler cannot perform its rename operation. Runtime acceptance remains pending.
+
+## First runtime load (2026-11-23)
+
+- The isolated Recomp completed compilation when run by the user. The user reports successfully loading the converted slot; a screenshot shows the playable field. The generated module exists and the lab's card remains identical to the prepared converted card, so no in-game resave is yet evidenced.
+- ReShade's first-run overlay and screenshot notification were visible. The copied `dxgi.dll` identifies itself as ReShade 6.8; its private log confirms swap-chain hooks and screenshot capture. After the lab exited, the copied DLL was renamed to `dxgi.reshade-disabled.dll` (reversible); the installed game's DLL was untouched. A lower-edge rendering artifact was also visible; cause not yet established. Do not attribute it to save conversion or to ReShade without a clean retest.
+- Next: reopen the isolated game without ReShade, check status/inventory, traverse rooms, fight a battle, save in a different slot and restart/reload. Then verify the resulting EU card structurally. No original file or screenshot is published.
